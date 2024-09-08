@@ -1,4 +1,4 @@
-package main
+package sender
 
 import (
 	"fmt"
@@ -8,10 +8,16 @@ import (
 
 	// Add this line to import the util package
 	"github.com/joho/godotenv"
-	// Replace "your-package-path" with the actual package path
 )
 
-func main() {
+type Sender struct {
+	Email    string
+	Pass     string
+	Name     string
+	LastName string
+}
+
+func SendMail(s Sender) error {
 	err := godotenv.Load()
 	if err != nil {
 		fmt.Println("Error loading .env file")
@@ -23,20 +29,18 @@ func main() {
 	// log.Println("PASS_EMAIL:", os.Getenv("PASS_EMAIL"))
 	smtpHost := os.Getenv("SMTP_HOST")
 	smtpPort := os.Getenv("SMTP_PORT")
-	to := []string{"tind.nd6999@gmail.com"}
+	to := []string{s.Email}
 
-	us_password := util.GeneratePass(10)
-
-	message := fmt.Sprintf("Subject: primetokenlist registration\n\nThanks for choosing us platform. Your password is: %s\nUse his for auth on our site with your email", us_password)
-	log.Println(string([]byte(message)))
+	message := fmt.Sprintf("Subject: PrimeTokenList Registration\n\nDear %s %s!\nThanks for choosing us platform. Your password is: %s\nUse him for auth on our site with your email",
+		s.LastName, s.Name, s.Pass)
 
 	auth := smtp.PlainAuth("", from, pass, smtpHost)
 
 	err = smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, []byte(message))
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	log.Println("Email sent successfully!")
-
+	return nil
 }

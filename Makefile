@@ -14,13 +14,16 @@ dropdb:
 	docker exec -it postgres_crypto dropdb -U postgres crypto-platform -f
 
 migrateup:
-	migrate -path db/migration -database "postgresql://postgres:root@localhost:5432/crypto-platform?sslmode=disable" -verbose up
+	migrate -path internal/migrations -database "postgresql://postgres:root@localhost:5432/crypto-platform?sslmode=disable" -verbose up
 
 migratedown:
-	migrate -path db/migration -database "postgresql://postgres:root@localhost:5432/crypto-platform?sslmode=disable" -verbose down
+	migrate -path internal/migrations -database "postgresql://postgres:root@localhost:5432/crypto-platform?sslmode=disable" -verbose down
 
 sqlc:
 	sqlc generate
+
+test:
+	go test -v -cover ./...
 
 
 .PHONY: postgres outps gotodb createdb dropdb migrateup migratedown sqlc

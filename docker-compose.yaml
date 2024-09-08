@@ -40,7 +40,8 @@ services:
       PGDATA: "/var/lib/postgresql/data/pgdata"
     volumes:
       - ../2. Init Database:/docker-entrypoint-initdb.d
-      - habrdb-data:/var/lib/postgresql/data
+      - my-data:/var/lib/postgresql/data
+
     ports:
       - "5432:5432"
     healthcheck:
@@ -79,7 +80,7 @@ services:
       - postgres
 
 volumes:
-  habrdb-data:
+  my-data:
   pgadmin-data:
 
 networks:

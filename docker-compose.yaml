@@ -63,7 +63,7 @@ services:
     container_name: pgadmin_crypto
     image: dpage/pgadmin4:8.1
     environment:
-      PGADMIN_DEFAULT_EMAIL: "user@mail.ru"
+      PGADMIN_DEFAULT_EMAIL: "models@mail.ru"
       PGADMIN_DEFAULT_PASSWORD: "12345678"
       PGADMIN_CONFIG_SERVER_MODE: "False"
     volumes:

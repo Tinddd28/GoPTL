@@ -4,16 +4,17 @@ import (
 	"crypto/sha1"
 	"errors"
 	"fmt"
+	"github.com/Tinddd28/GoPTL/internal/models"
 	"github.com/Tinddd28/GoPTL/internal/repository"
-	"github.com/Tinddd28/GoPTL/internal/user"
 	"github.com/dgrijalva/jwt-go"
 	"time"
 )
 
 const (
-	salt       = "nf289^ho3h2t2hfh32fhei&^E"
-	tokenTTL   = time.Hour * 12
-	signingKey = "kjdbgbsj#@j141fodjsvbsdv"
+	salt              = "nf289^ho3h2t2hfh32fhei&^E"
+	tokenTTL          = time.Hour * 12
+	signingKey        = "kjdbgbsj#@j141fodjsvbsdv"
+	issupuerUserEmpty = false
 )
 
 type AuthService struct {
@@ -22,15 +23,15 @@ type AuthService struct {
 
 type tokenClaims struct {
 	jwt.StandardClaims
-	UserId int    `json:"user_id"`
-	Email  string `json:"email"`
+	UserId      int  `json:"user_id"`
+	Issuperuser bool `json:"is_superuser"`
 }
 
 func NewAuthService(repo repository.Authorization) *AuthService {
 	return &AuthService{repo: repo}
 }
 
-func (s *AuthService) CreateUser(user user.User) (int, error) {
+func (s *AuthService) CreateUser(user models.User) (int, error) {
 	user.Password = s.generatePassHash(user.Password)
 	return s.repo.CreateUser(user)
 }
@@ -49,7 +50,7 @@ func (s *AuthService) GenerateToken(email, password string) (string, error) {
 			IssuedAt:  time.Now().Unix(),
 		},
 		usr.Id,
-		usr.Email,
+		usr.Issuperuser,
 	})
 	//log_.Info("token is: ", slog.Any("token", token))
 	return token.SignedString([]byte(signingKey))
@@ -62,7 +63,7 @@ func (s *AuthService) generatePassHash(password string) string {
 	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
 }
 
-func (s *AuthService) ParseToken(accessToken string) (int, string, error) {
+func (s *AuthService) ParseToken(accessToken string) (int, bool, error) {
 	token, err := jwt.ParseWithClaims(accessToken, &tokenClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("invalid signing method")
@@ -72,12 +73,12 @@ func (s *AuthService) ParseToken(accessToken string) (int, string, error) {
 	})
 
 	if err != nil {
-		return 0, "", err
+		return 0, issupuerUserEmpty, err
 	}
 
 	if claims, ok := token.Claims.(*tokenClaims); !ok {
-		return 0, "", errors.New("token claims are not of type *tokenClaims")
+		return 0, issupuerUserEmpty, errors.New("token claims are not of type *tokenClaims")
 	} else {
-		return claims.UserId, claims.Email, nil
+		return claims.UserId, claims.Issuperuser, nil
 	}
 }

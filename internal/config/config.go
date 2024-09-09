@@ -18,7 +18,7 @@ type Config struct {
 type Database struct {
 	Host     string `yaml:"host" env-default:"localhost"`
 	Port     string `yaml:"port" env-default:"5432"`
-	User     string `yaml:"user" env-default:"postgres"`
+	User     string `yaml:"models" env-default:"postgres"`
 	Password string `yaml:"password" env-default:"root"`
 	DBName   string `yaml:"db_name" env-default:"crypto-platform"`
 	SSLMode  string `yaml:"ssl_mode" env-default:"disable"`

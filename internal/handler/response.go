@@ -6,13 +6,13 @@ import (
 	"log/slog"
 )
 
-type Error struct {
+type ErrorResponse struct {
 	Message string `json:"message"`
 }
 
-func newErrorResponse(c *gin.Context, statusCode int, message string) {
+func NewErrorResponse(c *gin.Context, statusCode int, message string) {
 	var log_ *slog.Logger
 	log_ = logger.SetupPrettyLogger()
 	log_.Error(message)
-	c.AbortWithStatusJSON(statusCode, Error{message})
+	c.AbortWithStatusJSON(statusCode, ErrorResponse{message})
 }

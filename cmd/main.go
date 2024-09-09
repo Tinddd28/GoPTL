@@ -10,6 +10,16 @@ import (
 	"log/slog"
 )
 
+// @title GoPTL API
+// @version 1
+// @description This is a backend for PrimeTokenList.
+
+// @host localhost:8080
+// @BasePath /
+
+// @securityDefinitions.apiKey ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
 	cfg := config.MustLoad()
 	log_ := logger.SetupLogger(cfg.Env)

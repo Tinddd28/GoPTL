@@ -1,31 +1,26 @@
-version: '3.8'
 
 services:
-  goptl:
-    build: ./
-    command: ./wait-for-postgres.sh db ./goptl
-    ports:
-      - 8000:8000
+  app:
+    image: test:latest
+    container_name: test-app
     depends_on:
-      - db
-    environment:
-      - DB_HOST=crypto-platform
-      - DB_PORT=5432
-      - DB_NAME=crypto-platform
-      - DB_USER=postgres
-      - DB_PASSWORD=root
-
-  goptldb:
-    restart: always
-    image: postgres:16.4-bookworm
-    volumes:
-      - ./.database/postgres/data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=crypto-platform
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=root
+      - postgresql
     ports:
-      - 5432:5432
+      - "8000:8080"
+    networks:
+      - ps
 
-volumes:
-  db_data:
+  postgresql:
+    image: postgres:16.4-alpine3.20
+    container_name: test-psql
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: crypto-platform
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    networks:
+      - ps
+networks:
+  ps:
+    driver: bridge

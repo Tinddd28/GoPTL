@@ -21,21 +21,24 @@ type Network interface {
 	DeleteNetwork(NetId int) error
 }
 
-type Password interface {
-	ChangePassword(pass models.Password) error
-	ResetPassword(email string) error
+type Pass interface {
+	ChangePassword(id int, Oldpass, Newpass string) error
+	ResetPassword(pass string, email string) error
+	CheckPassword(id int, password string) error
 }
 
 type Repository struct {
 	Authorization
 	Usr
 	Network
-	Password
+	Pass
 }
 
 func NewRepository(db *pgxpool.Pool) *Repository {
 	return &Repository{
 		Authorization: NewAuthPostgres(db),
 		Usr:           NewUserPostgres(db),
+		Pass:          NewPassPostgres(db),
+		Network:       NewNetPostgres(db),
 	}
 }

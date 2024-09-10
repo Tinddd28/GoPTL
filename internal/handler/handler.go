@@ -30,13 +30,20 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	user := router.Group("/user", h.userIdentity)
 	{
 		user.GET("/", h.GetUsr)
-		user.PUT("/", h.UpdateUser)
+		user.PUT("/", h.UpdateUser) // FIXME: Добавить изменение поля updated_at в таблице
 	}
 
-	//password := router.Group("/password")
+	password := router.Group("/password") // FIXME: Добавить изменение поля updated_at в таблице
+	{
+		password.PATCH("/change", h.userIdentity, h.ChangePassword)
+		password.POST("/reset", h.ResetPassword)
+	}
+
+	//networks := router.Group("/networks")
 	//{
-	//	password.PATCH("/change", h.userIdentity)
-	//	password.POST("/reset")
+	//	networks.POST("/create") // TODO: add middleware for admin website
+	//	networks.GET("/all")
+	//	networks.DELETE("/:net_id") // TODO: add middleware for admin website
 	//}
 	//
 	//transactions := router.Group("/transactions", h.userIdentity)
@@ -62,12 +69,6 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	//	projects.DELETE("/:id") // TODO: add middleware for project admin
 	//}
 	//
-	//networks := router.Group("/networks")
-	//{
-	//	networks.POST("/create") // TODO: add middleware for admin website
-	//	networks.GET("/all")
-	//	networks.DELETE("/:net_id") // TODO: add middleware for admin website
-	//}
 
 	return router
 }

@@ -1,17 +1,15 @@
 package service
 
 import (
-	"crypto/sha1"
 	"errors"
-	"fmt"
 	"github.com/Tinddd28/GoPTL/internal/models"
 	"github.com/Tinddd28/GoPTL/internal/repository"
+	"github.com/Tinddd28/GoPTL/pkg/hash"
 	"github.com/dgrijalva/jwt-go"
 	"time"
 )
 
 const (
-	salt              = "nf289^ho3h2t2hfh32fhei&^E"
 	tokenTTL          = time.Hour * 12
 	signingKey        = "kjdbgbsj#@j141fodjsvbsdv"
 	issupuerUserEmpty = false
@@ -32,12 +30,12 @@ func NewAuthService(repo repository.Authorization) *AuthService {
 }
 
 func (s *AuthService) CreateUser(user models.User) (int, error) {
-	user.Password = s.generatePassHash(user.Password)
+	user.Password = hash.GeneratePassHash(user.Password)
 	return s.repo.CreateUser(user)
 }
 
 func (s *AuthService) GenerateToken(email, password string) (string, error) {
-	usr, err := s.repo.GetUser(email, s.generatePassHash(password))
+	usr, err := s.repo.GetUser(email, hash.GeneratePassHash(password))
 	//log_ := logger.SetupPrettyLogger()
 	if err != nil {
 		//log_.Info("GenerateToken", slog.Any("error", err))
@@ -56,12 +54,12 @@ func (s *AuthService) GenerateToken(email, password string) (string, error) {
 	return token.SignedString([]byte(signingKey))
 }
 
-func (s *AuthService) generatePassHash(password string) string {
-	hash := sha1.New()
-	hash.Write([]byte(password))
-
-	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
-}
+//func (s *AuthService) generatePassHash(password string) string {
+//	hash := sha1.New()
+//	hash.Write([]byte(password))
+//
+//	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
+//}
 
 func (s *AuthService) ParseToken(accessToken string) (int, bool, error) {
 	token, err := jwt.ParseWithClaims(accessToken, &tokenClaims{}, func(token *jwt.Token) (interface{}, error) {

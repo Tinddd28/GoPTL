@@ -23,8 +23,8 @@ type Network interface {
 }
 
 type Password interface {
-	ChangePassword(pass models.Password) error
-	ResetPassword(email string) error
+	ChangePassword(id int, Oldpass, Newpass string) error
+	ResetPassword(pass string, email string) error
 }
 
 type Wallet interface {
@@ -55,5 +55,7 @@ func NewService(repos *repository.Repository) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization),
 		Usr:           NewUserService(repos.Usr),
+		Password:      NewPassService(repos.Pass),
+		Network:       NewNetService(repos.Network),
 	}
 }

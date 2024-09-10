@@ -15,6 +15,26 @@ definitions:
     - email
     - password
     type: object
+  models.PassReset:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  models.Password:
+    properties:
+      confirm_password:
+        type: string
+      new_password:
+        type: string
+      old_password:
+        type: string
+    required:
+    - confirm_password
+    - new_password
+    - old_password
+    type: object
   models.User:
     properties:
       country:
@@ -110,6 +130,78 @@ paths:
       summary: Register
       tags:
       - auth
+  /password/change:
+    patch:
+      consumes:
+      - application/json
+      description: change password
+      operationId: change-password
+      parameters:
+      - description: password info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Password'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Change password
+      tags:
+      - password
+  /password/reset:
+    post:
+      consumes:
+      - application/json
+      description: reset password
+      operationId: reset-password
+      parameters:
+      - description: email
+        in: body
+        name: email
+        required: true
+        schema:
+          $ref: '#/definitions/models.PassReset'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Password has been reset
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Reset password
+      tags:
+      - password
   /user:
     get:
       consumes:

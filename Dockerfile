@@ -1,26 +1,32 @@
-# Используем официальный образ Golang для сборки
-FROM golang:1.23
+FROM golang:1.23-alpine AS builder
 
-# Устанавливаем переменную GOPATH
-ENV GOPATH=/
+WORKDIR /usr/local/src
 
-# Устанавливаем рабочую директорию
-WORKDIR /app
+RUN apk --no-cache add bash git make gcc musl-dev
 
-# Копируем go.mod и go.sum для кэширования зависимостей
-COPY go.mod go.sum ./
+RUN go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 
-# Загружаем зависимости
+# Dependencies
+COPY ["go.mod", "go.sum", "./"]
 RUN go mod download
 
-# Копируем весь остальной код
-COPY . .
+# build
+COPY . ./
 
-# Делаем скрипт wait-for-postgres.sh исполняемым (если он нужен)
-RUN chmod +x wait-for-postgres.sh
+RUN go build -o ./bin/app cmd/main.go
 
-# Сборка приложения
-RUN go build -o goptl ./cmd/main.go
+FROM alpine AS runner
+RUN apk --no-cache add bash postgresql-client
 
-# Указываем команду по умолчанию для запуска приложения
-CMD ["./goptl"]
+COPY --from=builder /usr/local/src/bin/app /app/app
+COPY --from=builder /go/bin/migrate /app/migrate
+
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+COPY .env /.env
+COPY config/dev.yaml /config/dev.yaml
+COPY internal/migrations /app/migrations
+
+RUN ls -la /app
+ENTRYPOINT ["/app/entrypoint.sh"]

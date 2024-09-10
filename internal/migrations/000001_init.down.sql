@@ -1,29 +1,32 @@
 -- Удаление внешних ключей из таблицы "entries"
 ALTER TABLE "entries"
-DROP CONSTRAINT IF EXISTS fk_from_wallet_id,
-    DROP CONSTRAINT IF EXISTS fk_to_wallet_id;
+    DROP CONSTRAINT IF EXISTS fk_from_wallet_id,
+    DROP CONSTRAINT IF EXISTS fk_to_wallet_id,
+    DROP CONSTRAINT IF EXISTS fk_project_id;
 
 -- Удаление внешних ключей из таблицы "wallets"
 ALTER TABLE "wallets"
-DROP CONSTRAINT IF EXISTS fk_network_standard_id,
+    DROP CONSTRAINT IF EXISTS fk_network_standard_id,
     DROP CONSTRAINT IF EXISTS fk_project_id,
     DROP CONSTRAINT IF EXISTS fk_user_id;
 
 -- Удаление внешних ключей из таблицы "transactions"
 ALTER TABLE "transactions"
-DROP CONSTRAINT IF EXISTS fk_user_id,
-    DROP CONSTRAINT IF EXISTS fk_project_id;
+    DROP CONSTRAINT IF EXISTS fk_user_id;
 
 -- Удаление индексов из таблицы "entries"
 DROP INDEX IF EXISTS idx_entries_from_wallet_id;
 DROP INDEX IF EXISTS idx_entries_to_wallet_id;
+DROP INDEX IF EXISTS idx_entries_project_id;
 
 -- Удаление индексов из таблицы "wallets"
 DROP INDEX IF EXISTS idx_wallets_address;
+DROP INDEX IF EXISTS idx_user_id;
+DROP INDEX IF EXISTS idx_project_id;
 
 -- Удаление индексов из таблицы "transactions"
 DROP INDEX IF EXISTS idx_transactions_tx_hash;
-DROP INDEX IF EXISTS idx_tickets_project;
+DROP INDEX IF EXISTS idx_entry_idt;
 
 -- Удаление индексов из таблицы "projects"
 DROP INDEX IF EXISTS idx_cost_per_token;
@@ -47,7 +50,7 @@ DROP TABLE IF EXISTS "transactions" CASCADE;
 DROP TABLE IF EXISTS "projects" CASCADE;
 
 -- Удаление таблицы "networkStandards"
-DROP TABLE IF EXISTS "networkStandards" CASCADE;
+DROP TABLE IF EXISTS "network_standards" CASCADE;
 
 -- Удаление таблицы "users"
 DROP TABLE IF EXISTS "users" CASCADE;

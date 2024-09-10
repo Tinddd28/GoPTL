@@ -3,9 +3,11 @@ package handler
 import (
 	_ "github.com/Tinddd28/GoPTL/docs"
 	"github.com/Tinddd28/GoPTL/internal/service"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/files"       // swagger embed files
 	"github.com/swaggo/gin-swagger" // gin-swagger middleware
+	"time"
 )
 
 type Handler struct {
@@ -18,6 +20,15 @@ func NewHandler(services *service.Service) *Handler {
 
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
+
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:8000", "http://0.0.0.0:8000"}, // Указываем разрешенные источники (origins)
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

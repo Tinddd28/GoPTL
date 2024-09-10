@@ -25,7 +25,7 @@ type Database struct {
 }
 
 type HTTPServer struct {
-	Address     string        `yaml:"address" env-default:"0.0.0.0:8080"`
+	Address     string        `yaml:"address" env-default:":8000"`
 	Timeout     time.Duration `yaml:"timeout" env-default:"4s"`
 	IdleTimeout time.Duration `yaml:"idle_timeout" env-default:"120s"`
 }

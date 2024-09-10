@@ -15,7 +15,7 @@ import (
 // @version 1
 // @description This is a backend for PrimeTokenList.
 
-// @host localhost:8080
+// @host 0.0.0.0:8000
 // @BasePath /
 
 // @securityDefinitions.apiKey ApiKeyAuth

@@ -23,7 +23,7 @@ RUN apk --no-cache add bash postgresql-client
 
 COPY --from=builder /usr/local/src/bin/app /app/app
 COPY --from=builder /go/bin/migrate /app/migrate
-
+COPY --from=builder /usr/local/src/docs /app/docs
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 

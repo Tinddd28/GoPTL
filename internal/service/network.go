@@ -14,13 +14,21 @@ func NewNetService(repo repository.Network) *NetService {
 }
 
 func (ns *NetService) CreateNetwork(net models.Network) (int, error) {
-	return 0, nil
+	return ns.repo.CreateNetwork(net)
 }
 
 func (ns *NetService) GetNetworks() ([]models.Network, error) {
-	return []models.Network{}, nil
+	networks, err := ns.repo.GetNetworks()
+	if err != nil {
+		return nil, err
+	}
+	return networks, nil
 }
 
 func (ns *NetService) DeleteNetwork(NetId int) error {
+	err := ns.repo.DeleteNetwork(NetId)
+	if err != nil {
+		return err
+	}
 	return nil
 }

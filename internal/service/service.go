@@ -35,7 +35,7 @@ type Wallet interface {
 }
 
 type Project interface {
-	CreateProject(project models.Project) (int, error)
+	CreateProject(proj models.Project) (int, error)
 	GetProjects() ([]models.Project, error)
 	GetProjectById(id int) (models.Project, error)
 	UpdateProject(id int, input models.Project) error
@@ -57,5 +57,6 @@ func NewService(repos *repository.Repository) *Service {
 		Usr:           NewUserService(repos.Usr),
 		Password:      NewPassService(repos.Pass),
 		Network:       NewNetService(repos.Network),
+		Project:       NewProjService(repos.Project),
 	}
 }

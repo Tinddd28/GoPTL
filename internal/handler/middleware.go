@@ -47,3 +47,17 @@ func getUserId(c *gin.Context) (int, error) {
 
 	return idInt, nil
 }
+
+func getSuperUser(c *gin.Context) (bool, error) {
+	id, ok := c.Get(superUserCtx)
+	if !ok {
+		return false, errors.New("user id not found")
+	}
+
+	idBool, ok := id.(bool)
+	if !ok {
+		return false, errors.New("user id is of invalid type")
+	}
+
+	return idBool, nil
+}

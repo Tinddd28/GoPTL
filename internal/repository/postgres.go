@@ -11,7 +11,7 @@ const (
 	walletsTable      = "wallets"
 	transactionsTable = "transactions"
 	projectsTable     = "projects"
-	networksTable     = "networks"
+	networksTable     = "networks_standards"
 	entriesTable      = "entries"
 )
 

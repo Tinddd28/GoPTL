@@ -50,13 +50,22 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		password.POST("/reset", h.ResetPassword)
 	}
 
-	//networks := router.Group("/networks")
-	//{
-	//	networks.POST("/create") // TODO: add middleware for admin website
-	//	networks.GET("/all")
-	//	networks.DELETE("/:net_id") // TODO: add middleware for admin website
-	//}
-	//
+	networks := router.Group("/networks")
+	{
+		networks.POST("/create", h.userIdentity)
+		networks.GET("/all", h.GetNetworks)
+		networks.DELETE("/:net_id", h.DeleteNetwork)
+	}
+
+	projects := router.Group("/projects")
+	{
+		projects.POST("/create", h.CreateProject) // TODO: add middleware for project admin
+		//projects.GET("/all")
+		//projects.GET("/:id")
+		//projects.PUT("/:id")    // TODO: add middleware for project admin
+		//projects.DELETE("/:id") // TODO: add middleware for project admin
+	}
+
 	//transactions := router.Group("/transactions", h.userIdentity)
 	//{
 	//	transactions.GET("/")
@@ -69,15 +78,6 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	//	wallets.POST("/create_for_user", h.userIdentity, h.CreateWalletForUser)
 	//	wallets.POST("/create_for_project") // TODO: add middleware for project admin
 	//	wallets.GET("/all")
-	//}
-	//
-	//projects := router.Group("/projects")
-	//{
-	//	projects.POST("/create") // TODO: add middleware for project admin
-	//	projects.GET("/all")
-	//	projects.GET("/:id")
-	//	projects.PUT("/:id")    // TODO: add middleware for project admin
-	//	projects.DELETE("/:id") // TODO: add middleware for project admin
 	//}
 	//
 

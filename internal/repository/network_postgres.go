@@ -7,6 +7,7 @@ import (
 	"github.com/Tinddd28/GoPTL/internal/models"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"golang.org/x/exp/slog"
 )
 
 type NetPostgres struct {
@@ -38,6 +39,7 @@ func (np *NetPostgres) CreateNetwork(net models.Network) (int, error) {
 func (np *NetPostgres) GetNetworks() ([]models.Network, error) {
 	query := fmt.Sprintf("SELECT id, name, code FROM %s", networksTable)
 	rows, err := np.db.Query(context.Background(), query)
+
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +54,8 @@ func (np *NetPostgres) GetNetworks() ([]models.Network, error) {
 		}
 		networks = append(networks, network)
 	}
-	return []models.Network{}, nil
+	slog.Info("smth", slog.String("smth", fmt.Sprintf("%v", networks)))
+	return networks, nil
 }
 
 func (np *NetPostgres) DeleteNetwork(NetId int) error {
@@ -66,7 +69,7 @@ func (np *NetPostgres) DeleteNetwork(NetId int) error {
 }
 
 func (np *NetPostgres) GetNetwork(net models.Network) int {
-	query := fmt.Sprintf("SELECT id, name, code FRO< %s WHERE name=$1 OR code=$2", networksTable)
+	query := fmt.Sprintf("SELECT id, name, code FROM %s WHERE name=$1 OR code=$2", networksTable)
 	row := np.db.QueryRow(context.Background(), query, net.NetworkName, net.NetworkCode)
 	var id int
 	if err := row.Scan(&id); err != nil {

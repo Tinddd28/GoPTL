@@ -20,7 +20,7 @@ import (
 // @Failure 401 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Failure default {object} ErrorResponse
-// @Router /network [post]
+// @Router /networks/create [post]
 func (h *Handler) CreateNetwork(c *gin.Context) {
 	supus, err := getSuperUser(c)
 	if err != nil {
@@ -57,7 +57,7 @@ func (h *Handler) CreateNetwork(c *gin.Context) {
 // @Success 200 {object} []models.Network
 // @Failure 500 {object} ErrorResponse
 // @Failure default {object} ErrorResponse
-// @Router /network [get]
+// @Router /networks/all [get]
 func (h *Handler) GetNetworks(c *gin.Context) {
 	networks, err := h.services.Network.GetNetworks()
 	if err != nil {
@@ -80,7 +80,7 @@ func (h *Handler) GetNetworks(c *gin.Context) {
 // @Failure 401 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Failure default {object} ErrorResponse
-// @Router /network/{id} [delete]
+// @Router /networks/{id} [delete]
 func (h *Handler) DeleteNetwork(c *gin.Context) {
 	supus, err := getSuperUser(c)
 	if err != nil {

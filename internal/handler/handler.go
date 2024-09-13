@@ -22,7 +22,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
 
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"}, // Указываем разрешенные источники (origins)
+		AllowOrigins:     []string{"http://localhost:8000"}, // Указываем разрешенные источники (origins)
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -38,10 +38,10 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		auth.POST("/login", h.Login)
 	}
 
-	user := router.Group("/user", h.userIdentity)
+	user := router.Group("/user")
 	{
-		user.GET("/", h.GetUsr)
-		user.PUT("/", h.UpdateUser) // FIXME: Добавить изменение поля updated_at в таблице
+		user.GET("/", h.userIdentity, h.GetUsr)
+		user.PUT("/", h.userIdentity, h.UpdateUser) // FIXME: Добавить изменение поля updated_at в таблице
 	}
 
 	password := router.Group("/password") // FIXME: Добавить изменение поля updated_at в таблице
@@ -52,18 +52,18 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	networks := router.Group("/networks")
 	{
-		networks.POST("/create", h.userIdentity)
+		networks.POST("/create", h.userIdentity, h.CreateNetwork)
 		networks.GET("/all", h.GetNetworks)
-		networks.DELETE("/:net_id", h.DeleteNetwork)
+		networks.DELETE("/:id", h.userIdentity, h.DeleteNetwork)
 	}
 
 	projects := router.Group("/projects")
 	{
-		projects.POST("/create", h.CreateProject) // TODO: add middleware for project admin
-		//projects.GET("/all")
-		//projects.GET("/:id")
-		//projects.PUT("/:id")    // TODO: add middleware for project admin
-		//projects.DELETE("/:id") // TODO: add middleware for project admin
+		projects.POST("/create", h.userIdentity, h.CreateProject)
+		projects.GET("/all", h.GetProjects)
+		projects.GET("/:id", h.GetProjectById)
+		projects.PUT("/:id", h.userIdentity, h.UpdateProject)
+		projects.DELETE("/:id", h.userIdentity, h.DeleteProject)
 	}
 
 	//transactions := router.Group("/transactions", h.userIdentity)

@@ -47,7 +47,6 @@ func (h *Handler) UpdateUser(c *gin.Context) {
 // @Tags user
 // @Description get user info
 // @ID get-user
-// @Accept json
 // @Produce json
 // @Success 200 {object} models.User
 // @Failure 400 {object} ErrorResponse
@@ -57,6 +56,7 @@ func (h *Handler) UpdateUser(c *gin.Context) {
 func (h *Handler) GetUsr(c *gin.Context) {
 	var usr models.User
 	id, err := getUserId(c)
+
 	if err != nil {
 		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

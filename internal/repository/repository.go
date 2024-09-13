@@ -30,7 +30,7 @@ type Pass interface {
 
 type Project interface {
 	CreateProject(project models.Project) (int, error)
-	GetProjects() ([]models.Project, error)
+	GetProjects(offset int) ([]models.Project, error)
 	GetProjectById(id int) (models.Project, error)
 	UpdateProject(id int, input models.Project) error
 	DeleteProject(id int) error

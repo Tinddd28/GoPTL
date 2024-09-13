@@ -24,9 +24,9 @@ func (pp *ProjPostgres) CreateProject(proj models.Project) (int, error) {
 	return proj.Id, nil
 }
 
-func (pp *ProjPostgres) GetProjects() ([]models.Project, error) {
-	query := fmt.Sprintf("SELECT id, title, description, token_title, amount, cost_per_token, image FROM %s", projectsTable)
-	rows, err := pp.db.Query(context.Background(), query)
+func (pp *ProjPostgres) GetProjects(offset int) ([]models.Project, error) {
+	query := fmt.Sprintf("SELECT id, title, description, token_title, amount, cost_per_token, image FROM %s LIMIT $1 OFFSET $2", projectsTable)
+	rows, err := pp.db.Query(context.Background(), query, limitСount, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,9 @@ func (pp *ProjPostgres) GetProjects() ([]models.Project, error) {
 		}
 		projects = append(projects, proj)
 	}
-	return nil, nil
+
+	//slog.Info("smth", slog.Any("projects", projects))
+	return projects, nil
 }
 
 func (pp *ProjPostgres) GetProjectById(id int) (models.Project, error) {

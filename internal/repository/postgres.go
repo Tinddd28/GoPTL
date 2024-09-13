@@ -6,13 +6,20 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+//TRC20
+//TON
+//ERC20
+//BEP20
+//SOL
+
 const (
 	usersTable        = "users"
 	walletsTable      = "wallets"
 	transactionsTable = "transactions"
 	projectsTable     = "projects"
-	networksTable     = "networks_standards"
+	networksTable     = "network_standards"
 	entriesTable      = "entries"
+	limitСount        = 10
 )
 
 type Config struct {

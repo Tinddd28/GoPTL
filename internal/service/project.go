@@ -17,8 +17,8 @@ func (ps *ProjService) CreateProject(proj models.Project) (int, error) {
 	return ps.repo.CreateProject(proj)
 }
 
-func (ps *ProjService) GetProjects() ([]models.Project, error) {
-	projects, err := ps.repo.GetProjects()
+func (ps *ProjService) GetProjects(offset int) ([]models.Project, error) {
+	projects, err := ps.repo.GetProjects(offset)
 	if err != nil {
 		return nil, err
 	}

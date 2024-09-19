@@ -16,8 +16,8 @@ CREATE TABLE "users" (
 -- Создание таблицы "networkStandards"
 CREATE TABLE "network_standards" (
                                     "id" bigserial PRIMARY KEY,
-                                    "name" VARCHAR NOT NULL UNIQUE CHECK (name ~* '^[a-zA-Z0-9_]+$'),
-    "code" VARCHAR NOT NULL UNIQUE CHECK (code ~* '^[a-zA-Z0-9_]+$')
+                                    "name" VARCHAR NOT NULL UNIQUE,
+    "code" VARCHAR NOT NULL UNIQUE CHECK (code IN ('TRC20', 'TON', 'ERC20', 'BEP20', 'SOL'));
 );
 
 -- Создание таблицы "projects"
@@ -27,8 +27,9 @@ CREATE TABLE "projects" (
     "description" VARCHAR NOT NULL,
     "token_title" VARCHAR NOT NULL,
     "image" VARCHAR NOT NULL UNIQUE,
-    "amount" float NOT NULL,
+    "amount" BIGINT NOT NULL,
     "cost_per_token" float NOT NULL,
+    "unlocked_tokens" BIGINT CHECK ("unlocked_tokens" <= "amount") DEFAULT 0
     "created_at" timestamptz not null default(now())
 );
 
@@ -50,7 +51,7 @@ CREATE TABLE "wallets" (
     "project_id" bigint,
     "user_id" bigint,
     "network_standard_id" bigint NOT NULL,
-    "balance" numeric NOT NULL,
+    "balance" bigint,
     "created_at" timestamptz not null default(now())
 );
 

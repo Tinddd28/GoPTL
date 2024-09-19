@@ -26,7 +26,7 @@ func (pp *ProjPostgres) CreateProject(proj models.Project) (int, error) {
 }
 
 func (pp *ProjPostgres) GetProjects(offset int) ([]models.ProjectForResponse, error) {
-	query := fmt.Sprintf("SELECT id, title, description, token_title, amount, cost_per_token, image, unlocked_token FROM %s LIMIT $1 OFFSET $2", projectsTable)
+	query := fmt.Sprintf("SELECT id, title, description, token_title, amount, cost_per_token, image, unlocked_tokens FROM %s LIMIT $1 OFFSET $2", projectsTable)
 	rows, err := pp.db.Query(context.Background(), query, limitCount, offset)
 	if err != nil {
 		return nil, err
@@ -75,7 +75,7 @@ func (pp *ProjPostgres) DeleteProject(id int) error {
 }
 
 func (pp *ProjPostgres) SetUnlockToken(id, amount int) error {
-	query := fmt.Sprintf("UPDATE %s SET unclocked_token=$2 WHERE id=$1", projectsTable)
+	query := fmt.Sprintf("UPDATE %s SET unclocked_tokens=$2 WHERE id=$1", projectsTable)
 	err := pp.db.QueryRow(context.Background(), query, id, amount).Scan()
 	if err != nil {
 		return err

@@ -12,3 +12,6 @@ ALTER TABLE "network_standards"
 ALTER TABLE "projects"
     ALTER COLUMN "amount" TYPE BIGINT USING amount::bigint,
     ADD COLUMN "unlocked_tokens" BIGINT CHECK ("unlocked_tokens" <= "amount") DEFAULT 0;
+
+ALTER TABLE "wallets" 
+    ALTER COLUMN "balance" DROP NOT NULL;

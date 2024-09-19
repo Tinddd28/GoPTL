@@ -23,12 +23,11 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
 
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:8000"}, // Указываем разрешенные источники (origins)
-		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
+		AllowOrigins:  []string{"*"}, // Указываем разрешенные источники (origins)
+		AllowMethods:  []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:  []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		ExposeHeaders: []string{"Content-Length"},
+		MaxAge:        12 * time.Hour,
 	}))
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -71,7 +70,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		wallets.POST("/create_for_user", h.userIdentity, h.CreateWalletForUser)
 		wallets.POST("/create_for_project", h.userIdentity, h.CreateWalletForProject)
-		wallets.GET("/all")
+		wallets.GET("/all", h.userIdentity, h.GetWallets)
 		wallets.GET("/balance", h.userIdentity, h.GetBalance)
 	}
 

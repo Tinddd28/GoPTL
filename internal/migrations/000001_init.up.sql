@@ -50,7 +50,7 @@ CREATE TABLE "wallets" (
     "project_id" bigint,
     "user_id" bigint,
     "network_standard_id" bigint NOT NULL,
-    "balance" numeric,
+    "balance" numeric NOT NULL,
     "created_at" timestamptz not null default(now())
 );
 

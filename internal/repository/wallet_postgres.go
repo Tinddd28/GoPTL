@@ -12,10 +12,6 @@ type WalPostgres struct {
 	db *pgxpool.Pool
 }
 
-const (
-	zeroBalance = 0
-)
-
 func NewWalPostgres(db *pgxpool.Pool) *WalPostgres {
 	return &WalPostgres{db: db}
 }
@@ -41,7 +37,7 @@ func (wp *WalPostgres) CreateWalletForProject(wallet models.Wallet) (int, error)
 }
 
 func (wp *WalPostgres) GetWallet(id int) (models.WalletForResponse, error) {
-	query := fmt.Sprintf("SELECT id, address, user_id, project_id, network_id, balance %s WHERE id = $1", walletsTable)
+	query := fmt.Sprintf("SELECT id, address, user_id, project_id, network_standard_id, balance FROM %s WHERE id = $1", walletsTable)
 	var wallet models.WalletForResponse
 	err := wp.db.QueryRow(context.Background(), query, id).Scan(&wallet.Id, &wallet.Address, &wallet.UserId, &wallet.ProjectId, &wallet.NetworkId, &wallet.Balance)
 	if err != nil {
@@ -52,7 +48,7 @@ func (wp *WalPostgres) GetWallet(id int) (models.WalletForResponse, error) {
 }
 
 func (wp *WalPostgres) GetWallets() ([]models.WalletForResponse, error) {
-	query := fmt.Sprintf("SELECT id, address, user_id, project_id, network_id, balance %s", walletsTable)
+	query := fmt.Sprintf("SELECT id, address, user_id, project_id, network_standard_id, balance FROM %s", walletsTable)
 	var wallets []models.WalletForResponse
 	rows, err := wp.db.Query(context.Background(), query)
 	if err != nil {

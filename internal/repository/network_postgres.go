@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/Tinddd28/GoPTL/internal/models"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -21,8 +22,7 @@ func NewNetPostgres(db *pgxpool.Pool) *NetPostgres {
 func (np *NetPostgres) CreateNetwork(net models.Network) (int, error) {
 	query := fmt.Sprintf("INSERT INTO %s (name, code) VALUES ($1, $2) returning id", networksTable)
 	var id int
-	id = np.GetNetwork(net)
-	if id != 0 {
+	if id = np.GetNetworkByNet(net); id != 0 {
 		return 0, errors.New("Network with this name of code already exists")
 	}
 	err := np.db.QueryRow(context.Background(), query, net.NetworkName, net.NetworkCode).Scan(&id)
@@ -34,6 +34,17 @@ func (np *NetPostgres) CreateNetwork(net models.Network) (int, error) {
 	}
 
 	return id, nil
+}
+
+func (np *NetPostgres) GetNetworkByNet(net models.Network) int {
+	query := fmt.Sprintf("SELECT id FROM %s WHERE name=$1 OR code=$2", networksTable)
+	var id int
+	err := np.db.QueryRow(context.Background(), query, net.NetworkName, net.NetworkCode).Scan(&id)
+	if err != nil {
+		return 0
+	}
+
+	return id
 }
 
 func (np *NetPostgres) GetNetworks() ([]models.Network, error) {
@@ -68,12 +79,13 @@ func (np *NetPostgres) DeleteNetwork(NetId int) error {
 	return nil
 }
 
-func (np *NetPostgres) GetNetwork(net models.Network) int {
-	query := fmt.Sprintf("SELECT id, name, code FROM %s WHERE name=$1 OR code=$2", networksTable)
-	row := np.db.QueryRow(context.Background(), query, net.NetworkName, net.NetworkCode)
-	var id int
-	if err := row.Scan(&id); err != nil {
-		return 0
+func (np *NetPostgres) GetNetwork(id int) (models.Network, error) {
+	query := fmt.Sprintf("SELECT id, name, code FROM %s WHERE id=$1", networksTable)
+	var network models.Network
+	err := np.db.QueryRow(context.Background(), query, id).Scan(&network.Id, &network.NetworkName, &network.NetworkCode)
+	if err != nil {
+		return models.Network{}, err
 	}
-	return id
+
+	return network, nil
 }

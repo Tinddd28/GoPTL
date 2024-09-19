@@ -1,10 +1,11 @@
 package handler
 
 import (
-	"github.com/Tinddd28/GoPTL/internal/models"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+
+	"github.com/Tinddd28/GoPTL/internal/models"
+	"github.com/gin-gonic/gin"
 )
 
 // @Summary Create network
@@ -28,7 +29,7 @@ func (h *Handler) CreateNetwork(c *gin.Context) {
 		return
 	}
 	if !supus {
-		NewErrorResponse(c, http.StatusUnauthorized, "you are not superuser")
+		NewErrorResponse(c, http.StatusUnauthorized, "you are not a superuser")
 		return
 	}
 

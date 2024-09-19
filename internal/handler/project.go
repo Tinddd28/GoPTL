@@ -2,10 +2,11 @@ package handler
 
 import (
 	"fmt"
-	"github.com/Tinddd28/GoPTL/internal/models"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+
+	"github.com/Tinddd28/GoPTL/internal/models"
+	"github.com/gin-gonic/gin"
 )
 
 // @Summary Create a new project
@@ -28,34 +29,13 @@ func (h *Handler) CreateProject(c *gin.Context) {
 	supusr, err := getSuperUser(c)
 
 	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusUnauthorized, err.Error())
 		return
 	}
 	if !supusr {
-		NewErrorResponse(c, http.StatusUnauthorized, "you are not superuser")
+		NewErrorResponse(c, http.StatusUnauthorized, "you are not a superuser")
 		return
 	}
-
-	//var project models.Project
-	//
-	//project.Title = c.PostForm("title")
-	//project.Description = c.PostForm("description")
-	//project.TokenTitle = c.PostForm("token_title")
-	//amount, err := strconv.ParseFloat(c.PostForm("amount"), 64)
-	//if err != nil {
-	//	NewErrorResponse(c, http.StatusBadRequest, "invalid amount")
-	//	return
-	//}
-	//
-	//project.Amount = amount
-	//
-	//costPerToken, err := strconv.ParseFloat(c.PostForm("cost_per_token"), 64)
-	//if err != nil {
-	//	NewErrorResponse(c, http.StatusBadRequest, "invalid cost per token")
-	//	return
-	//}
-	//
-	//project.CostPerToken = costPerToken
 	var form models.ProjectForm
 
 	// Привязываем данные формы
@@ -152,14 +132,14 @@ func (h *Handler) GetProjectById(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Description update project
 // @ID update-project
-// @Param id path int true "Project id"
-// @Accept json
+// @Accept multipart/form-data
 // @Produce json
-// @Param title body string true "Project title"
-// @Param description body string true "Project description"
-// @Param token_title body string true "Token title"
-// @Param amount body number true "Amount"
-// @Param cost_per_token body number true "Cost per token"
+// @Param id path int true "Project id"
+// @Param title formData string true "Project title"
+// @Param description formData string true "Project description"
+// @Param token_title formData string true "Token title"
+// @Param amount formData number true "Amount of tokens"
+// @Param cost_per_token formData number true "Cost per token"
 // @Success 200 {object} string
 // @Failure 400 {object} ErrorResponse
 // @Failure 401 {object} ErrorResponse
@@ -168,11 +148,11 @@ func (h *Handler) GetProjectById(c *gin.Context) {
 func (h *Handler) UpdateProject(c *gin.Context) {
 	supusr, err := getSuperUser(c)
 	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusUnauthorized, err.Error())
 		return
 	}
 	if !supusr {
-		NewErrorResponse(c, http.StatusUnauthorized, "you are not superuser")
+		NewErrorResponse(c, http.StatusUnauthorized, "you are not a superuser")
 		return
 	}
 
@@ -211,11 +191,11 @@ func (h *Handler) UpdateProject(c *gin.Context) {
 func (h *Handler) DeleteProject(c *gin.Context) {
 	supusr, err := getSuperUser(c)
 	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusUnauthorized, err.Error())
 		return
 	}
 	if !supusr {
-		NewErrorResponse(c, http.StatusUnauthorized, "you are not superuser")
+		NewErrorResponse(c, http.StatusUnauthorized, "you are not a superuser")
 		return
 	}
 
@@ -231,4 +211,43 @@ func (h *Handler) DeleteProject(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, "ok")
+}
+
+// @Summary
+// @Tags projects
+// @Security ApiKeyAuth
+// @Description set amount of unlocked token
+// @ID set-unlock-token
+// @Accept json
+// @Produce json
+// @Param token body models.SetUnlockToken true "amount tokens"
+// @Success 200 {object} string
+// @Failure 400 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /projects/set_unlock_token [post]
+func (h *Handler) SetUnlockToken(c *gin.Context) {
+	supusr, err := getSuperUser(c)
+	if err != nil {
+		NewErrorResponse(c, http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	if !supusr {
+		NewErrorResponse(c, http.StatusUnauthorized, "you are no a superuser")
+		return
+	}
+
+	var token = models.SetUnlockToken{}
+
+	if err := c.BindJSON(&token); err != nil {
+		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+	}
+
+	if err := h.services.Project.SetUnlockToken(token.Id, token.UnlockedToken); err != nil {
+		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, "Ok")
 }

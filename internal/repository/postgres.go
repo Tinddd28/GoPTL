@@ -19,7 +19,7 @@ const (
 	projectsTable     = "projects"
 	networksTable     = "network_standards"
 	entriesTable      = "entries"
-	limitСount        = 10
+	limitCount        = 10
 )
 
 type Config struct {

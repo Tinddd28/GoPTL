@@ -8,3 +8,7 @@ ALTER TABLE "network_standards"
 -- Обновляем столбец name для разрешения любых значений (если необходимо)
 ALTER TABLE "network_standards"
     ALTER COLUMN "name" TYPE VARCHAR;
+
+ALTER TABLE "projects"
+    ALTER COLUMN "amount" TYPE BIGINT USING amount::bigint,
+    ADD COLUMN "unlocked_tokens" BIGINT CHECK ("unlocked_tokens" <= "amount") DEFAULT 0;

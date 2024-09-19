@@ -20,6 +20,7 @@ type Network interface {
 	CreateNetwork(net models.Network) (int, error)
 	GetNetworks() ([]models.Network, error)
 	DeleteNetwork(NetId int) error
+	GetNetwork(id int) (models.Network, error)
 }
 
 type Password interface {
@@ -28,18 +29,21 @@ type Password interface {
 }
 
 type Wallet interface {
-	CreateWalletForUser(wallet models.WalletForUser) (int, error)
-	CreateWalletForProject(wallet models.WalletForProject) (int, error)
-	GetWallets() ([]models.Wallet, error)
+	CreateWalletForUser(wallet models.Wallet) (int, error)
+	CreateWalletForProject(wallet models.Wallet) (int, error)
+	GetWallets() ([]models.WalletForResponse, error)
 	GetBalance(id int) (int, error)
+	UpdateBalance(id, amount int) error
+	GetAddress(id int) (string, error)
 }
 
 type Project interface {
 	CreateProject(proj models.Project) (int, error)
-	GetProjects(offset int) ([]models.Project, error)
+	GetProjects(offset int) ([]models.ProjectForResponse, error)
 	GetProjectById(id int) (models.Project, error)
 	UpdateProject(id int, input models.Project) error
 	DeleteProject(id int) error
+	SetUnlockToken(id, amount int) error
 }
 
 type Service struct {
@@ -58,5 +62,6 @@ func NewService(repos *repository.Repository) *Service {
 		Password:      NewPassService(repos.Pass),
 		Network:       NewNetService(repos.Network),
 		Project:       NewProjService(repos.Project),
+		Wallet:        NewWalService(repos.Wallet),
 	}
 }

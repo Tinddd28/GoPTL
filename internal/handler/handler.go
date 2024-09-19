@@ -1,13 +1,14 @@
 package handler
 
 import (
+	"time"
+
 	_ "github.com/Tinddd28/GoPTL/docs"
 	"github.com/Tinddd28/GoPTL/internal/service"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/swaggo/files"       // swagger embed files
-	"github.com/swaggo/gin-swagger" // gin-swagger middleware
-	"time"
+	swaggerFiles "github.com/swaggo/files"     // swagger embed files
+	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 )
 
 type Handler struct {
@@ -64,6 +65,14 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		projects.GET("/:id", h.GetProjectById)
 		projects.PUT("/:id", h.userIdentity, h.UpdateProject)
 		projects.DELETE("/:id", h.userIdentity, h.DeleteProject)
+		projects.POST("/set_unlock_token", h.userIdentity, h.SetUnlockToken)
+	}
+	wallets := router.Group("/wallets")
+	{
+		wallets.POST("/create_for_user", h.userIdentity, h.CreateWalletForUser)
+		wallets.POST("/create_for_project", h.userIdentity, h.CreateWalletForProject)
+		wallets.GET("/all")
+		wallets.GET("/balance", h.userIdentity, h.GetBalance)
 	}
 
 	//transactions := router.Group("/transactions", h.userIdentity)
@@ -71,13 +80,6 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	//	transactions.GET("/")
 	//	transactions.POST("/purchase")
 	//	transactions.POST("/output")
-	//}
-	//
-	//wallets := router.Group("/wallets")
-	//{
-	//	wallets.POST("/create_for_user", h.userIdentity, h.CreateWalletForUser)
-	//	wallets.POST("/create_for_project") // TODO: add middleware for project admin
-	//	wallets.GET("/all")
 	//}
 	//
 

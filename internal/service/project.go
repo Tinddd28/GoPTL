@@ -17,7 +17,7 @@ func (ps *ProjService) CreateProject(proj models.Project) (int, error) {
 	return ps.repo.CreateProject(proj)
 }
 
-func (ps *ProjService) GetProjects(offset int) ([]models.Project, error) {
+func (ps *ProjService) GetProjects(offset int) ([]models.ProjectForResponse, error) {
 	projects, err := ps.repo.GetProjects(offset)
 	if err != nil {
 		return nil, err
@@ -39,4 +39,8 @@ func (ps *ProjService) UpdateProject(id int, input models.Project) error {
 
 func (ps *ProjService) DeleteProject(id int) error {
 	return ps.repo.DeleteProject(id)
+}
+
+func (ps *ProjService) SetUnlockToken(id, amount int) error {
+	return ps.repo.SetUnlockToken(id, amount)
 }

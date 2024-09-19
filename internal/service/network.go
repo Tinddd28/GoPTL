@@ -32,3 +32,11 @@ func (ns *NetService) DeleteNetwork(NetId int) error {
 	}
 	return nil
 }
+
+func (ns *NetService) GetNetwork(id int) (models.Network, error) {
+	network, err := ns.repo.GetNetwork(id)
+	if err != nil {
+		return models.Network{}, err
+	}
+	return network, nil
+}

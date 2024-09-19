@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+
 	"github.com/Tinddd28/GoPTL/internal/models"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -24,16 +25,16 @@ func (pp *ProjPostgres) CreateProject(proj models.Project) (int, error) {
 	return proj.Id, nil
 }
 
-func (pp *ProjPostgres) GetProjects(offset int) ([]models.Project, error) {
-	query := fmt.Sprintf("SELECT id, title, description, token_title, amount, cost_per_token, image FROM %s LIMIT $1 OFFSET $2", projectsTable)
-	rows, err := pp.db.Query(context.Background(), query, limitСount, offset)
+func (pp *ProjPostgres) GetProjects(offset int) ([]models.ProjectForResponse, error) {
+	query := fmt.Sprintf("SELECT id, title, description, token_title, amount, cost_per_token, image, unlocked_token FROM %s LIMIT $1 OFFSET $2", projectsTable)
+	rows, err := pp.db.Query(context.Background(), query, limitCount, offset)
 	if err != nil {
 		return nil, err
 	}
-	var projects []models.Project
+	var projects []models.ProjectForResponse
 	for rows.Next() {
-		var proj models.Project
-		err := rows.Scan(&proj.Id, &proj.Title, &proj.Description, &proj.TokenTitle, &proj.Amount, &proj.CostPerToken, &proj.Image)
+		var proj models.ProjectForResponse
+		err := rows.Scan(&proj.Id, &proj.Title, &proj.Description, &proj.TokenTitle, &proj.Amount, &proj.CostPerToken, &proj.Image, &proj.UnlockedToken)
 		if err != nil {
 			return nil, err
 		}
@@ -67,6 +68,15 @@ func (pp *ProjPostgres) UpdateProject(id int, input models.Project) error {
 func (pp *ProjPostgres) DeleteProject(id int) error {
 	query := fmt.Sprintf("DELETE FROM %s WHERE id=$1", projectsTable)
 	_, err := pp.db.Exec(context.Background(), query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (pp *ProjPostgres) SetUnlockToken(id, amount int) error {
+	query := fmt.Sprintf("UPDATE %s SET unclocked_token=$2 WHERE id=$1", projectsTable)
+	err := pp.db.QueryRow(context.Background(), query, id, amount).Scan()
 	if err != nil {
 		return err
 	}

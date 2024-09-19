@@ -15,6 +15,16 @@ definitions:
     - email
     - password
     type: object
+  models.Network:
+    properties:
+      network_code:
+        type: string
+      network_name:
+        type: string
+    required:
+    - network_code
+    - network_name
+    type: object
   models.PassReset:
     properties:
       email:
@@ -35,6 +45,27 @@ definitions:
     - new_password
     - old_password
     type: object
+  models.Project:
+    properties:
+      amount:
+        type: number
+      cost_per_token:
+        type: number
+      description:
+        type: string
+      image:
+        type: string
+      title:
+        type: string
+      token_title:
+        type: string
+    required:
+    - amount
+    - cost_per_token
+    - description
+    - title
+    - token_title
+    type: object
   models.User:
     properties:
       country:
@@ -50,6 +81,45 @@ definitions:
     - email
     - lastname
     - name
+    type: object
+  models.WalletForProject:
+    properties:
+      address:
+        type: string
+      network_id:
+        type: integer
+      project_id:
+        type: integer
+    required:
+    - address
+    - network_id
+    - project_id
+    type: object
+  models.WalletForResponse:
+    properties:
+      address:
+        type: string
+      balance:
+        type: number
+      network_id:
+        type: integer
+      project_id:
+        type: integer
+      user_id:
+        type: integer
+    required:
+    - address
+    - network_id
+    type: object
+  models.WalletForUser:
+    properties:
+      address:
+        type: string
+      network_id:
+        type: integer
+    required:
+    - address
+    - network_id
     type: object
 host: 0.0.0.0:8000
 info:
@@ -130,6 +200,110 @@ paths:
       summary: Register
       tags:
       - auth
+  /networks/{id}:
+    delete:
+      description: delete network
+      operationId: delete-network
+      parameters:
+      - description: network id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete network
+      tags:
+      - network
+  /networks/all:
+    get:
+      description: get all networks
+      operationId: get-networks
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Network'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Get networks
+      tags:
+      - network
+  /networks/create:
+    post:
+      consumes:
+      - application/json
+      description: create new network
+      operationId: create-network
+      parameters:
+      - description: network info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Network'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create network
+      tags:
+      - network
   /password/change:
     patch:
       consumes:
@@ -202,10 +376,217 @@ paths:
       summary: Reset password
       tags:
       - password
-  /user:
+  /projects/{id}:
+    delete:
+      description: delete project
+      operationId: delete-project
+      parameters:
+      - description: Project id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete project
+      tags:
+      - projects
     get:
+      description: get project by id
+      operationId: get-project-by-id
+      parameters:
+      - description: Project id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Project'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Get project by id
+      tags:
+      - projects
+    put:
       consumes:
       - application/json
+      description: update project
+      operationId: update-project
+      parameters:
+      - description: Project id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Project title
+        in: body
+        name: title
+        required: true
+        schema:
+          type: string
+      - description: Project description
+        in: body
+        name: description
+        required: true
+        schema:
+          type: string
+      - description: Token title
+        in: body
+        name: token_title
+        required: true
+        schema:
+          type: string
+      - description: Amount
+        in: body
+        name: amount
+        required: true
+        schema:
+          type: number
+      - description: Cost per token
+        in: body
+        name: cost_per_token
+        required: true
+        schema:
+          type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update project
+      tags:
+      - projects
+  /projects/all:
+    get:
+      description: get projects
+      operationId: get-projects
+      parameters:
+      - description: offest
+        in: query
+        name: offset
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Project'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Get projects
+      tags:
+      - projects
+  /projects/create:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Create a new project with title, description, token title, amount,
+        cost per token, and an image.
+      parameters:
+      - description: Project title
+        in: formData
+        name: title
+        required: true
+        type: string
+      - description: Project description
+        in: formData
+        name: description
+        required: true
+        type: string
+      - description: Token title
+        in: formData
+        name: token_title
+        required: true
+        type: string
+      - description: Amount of tokens
+        in: formData
+        name: amount
+        required: true
+        type: number
+      - description: Cost per token
+        in: formData
+        name: cost_per_token
+        required: true
+        type: number
+      - description: Project image file
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Project'
+        "400":
+          description: Invalid request data
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new project
+      tags:
+      - projects
+  /user:
+    get:
       description: get user info
       operationId: get-user
       produces:
@@ -269,6 +650,114 @@ paths:
       summary: Update user
       tags:
       - user
+  /wallets/all:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.WalletForResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Wallets
+      tags:
+      - wallets
+  /wallets/balance:
+    get:
+      consumes:
+      - application/json
+      description: get balance
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Balance
+      tags:
+      - wallets
+  /wallets/create_for_project:
+    post:
+      consumes:
+      - application/json
+      description: create wallet for project
+      parameters:
+      - description: wallet info
+        in: body
+        name: wallet
+        required: true
+        schema:
+          $ref: '#/definitions/models.WalletForProject'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create wallet for project
+      tags:
+      - wallets
+  /wallets/create_for_user:
+    post:
+      consumes:
+      - application/json
+      description: create wallet for user
+      parameters:
+      - description: wallet info
+        in: body
+        name: wallet
+        required: true
+        schema:
+          $ref: '#/definitions/models.WalletForUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create wallet for user
+      tags:
+      - wallets
 securityDefinitions:
   ApiKeyAuth:
     in: header

@@ -1,9 +1,10 @@
 package handler
 
 import (
+	"log/slog"
+
 	"github.com/Tinddd28/GoPTL/pkg/logger"
 	"github.com/gin-gonic/gin"
-	"log/slog"
 )
 
 type ErrorResponse struct {
@@ -11,8 +12,7 @@ type ErrorResponse struct {
 }
 
 func NewErrorResponse(c *gin.Context, statusCode int, message string) {
-	var log_ *slog.Logger
-	log_ = logger.SetupPrettyLogger()
+	var log_ *slog.Logger = logger.SetupPrettyLogger()
 	log_.Error(message)
 	c.AbortWithStatusJSON(statusCode, ErrorResponse{message})
 }

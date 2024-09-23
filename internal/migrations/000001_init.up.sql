@@ -17,7 +17,7 @@ CREATE TABLE "users" (
 CREATE TABLE "network_standards" (
                                     "id" bigserial PRIMARY KEY,
                                     "name" VARCHAR NOT NULL UNIQUE,
-    "code" VARCHAR NOT NULL UNIQUE CHECK (code IN ('TRC20', 'TON', 'ERC20', 'BEP20', 'SOL'));
+    "code" VARCHAR NOT NULL UNIQUE CHECK (code IN ('TRC20', 'TON', 'ERC20', 'BEP20', 'SOL'))
 );
 
 -- Создание таблицы "projects"
@@ -29,7 +29,7 @@ CREATE TABLE "projects" (
     "image" VARCHAR NOT NULL UNIQUE,
     "amount" BIGINT NOT NULL,
     "cost_per_token" float NOT NULL,
-    "unlocked_tokens" BIGINT CHECK ("unlocked_tokens" <= "amount") DEFAULT 0
+    "unlocked_tokens" BIGINT CHECK ("unlocked_tokens" <= "amount") DEFAULT 0,
     "created_at" timestamptz not null default(now())
 );
 

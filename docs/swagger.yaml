@@ -66,6 +66,16 @@ definitions:
     - title
     - token_title
     type: object
+  models.SetUnlockToken:
+    properties:
+      id:
+        type: integer
+      unlocked_token:
+        type: integer
+    required:
+    - id
+    - unlocked_token
+    type: object
   models.User:
     properties:
       country:
@@ -101,6 +111,8 @@ definitions:
         type: string
       balance:
         type: number
+      id:
+        type: integer
       network_id:
         type: integer
       project_id:
@@ -439,7 +451,7 @@ paths:
       - projects
     put:
       consumes:
-      - application/json
+      - multipart/form-data
       description: update project
       operationId: update-project
       parameters:
@@ -449,35 +461,30 @@ paths:
         required: true
         type: integer
       - description: Project title
-        in: body
+        in: formData
         name: title
         required: true
-        schema:
-          type: string
+        type: string
       - description: Project description
-        in: body
+        in: formData
         name: description
         required: true
-        schema:
-          type: string
+        type: string
       - description: Token title
-        in: body
+        in: formData
         name: token_title
         required: true
-        schema:
-          type: string
-      - description: Amount
-        in: body
+        type: string
+      - description: Amount of tokens
+        in: formData
         name: amount
         required: true
-        schema:
-          type: number
+        type: number
       - description: Cost per token
-        in: body
+        in: formData
         name: cost_per_token
         required: true
-        schema:
-          type: number
+        type: number
       produces:
       - application/json
       responses:
@@ -585,6 +592,42 @@ paths:
       summary: Create a new project
       tags:
       - projects
+  /projects/set_unlock_token:
+    post:
+      consumes:
+      - application/json
+      description: set amount of unlocked token
+      operationId: set-unlock-token
+      parameters:
+      - description: amount tokens
+        in: body
+        name: token
+        required: true
+        schema:
+          $ref: '#/definitions/models.SetUnlockToken'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - projects
   /user:
     get:
       description: get user info
@@ -648,6 +691,64 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Update user
+      tags:
+      - user
+  /user/verification:
+    post:
+      description: send verification code
+      operationId: verification
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Verification
+      tags:
+      - user
+  /user/verification_accept:
+    get:
+      description: apply verification code
+      operationId: apply-verification
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Apply verification
       tags:
       - user
   /wallets/all:

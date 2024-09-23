@@ -5,13 +5,13 @@ outps:
 	docker-compose down
 
 gotodb:
-	docker exec -it postgres_crypto psql -U postgres crypto-platform
+	docker exec -it goptl-psql psql -U postgres crypto-platform
 
 createdb:
-	docker exec -it postgres_crypto createdb -U postgres -O postgres crypto-platform
+	docker exec -it goptl-psql createdb -U postgres -O postgres crypto-platform
 
 dropdb:
-	docker exec -it postgres_crypto dropdb -U postgres crypto-platform -f
+	docker exec -it goptl-psql dropdb -U postgres crypto-platform -f
 
 migrateup:
 	migrate -path internal/migrations -database "postgresql://postgres:root@localhost:5432/crypto-platform?sslmode=disable" -verbose up

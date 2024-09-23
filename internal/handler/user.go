@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/Tinddd28/GoPTL/internal/models"
+	"github.com/Tinddd28/GoPTL/pkg/sender"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -58,7 +59,7 @@ func (h *Handler) GetUsr(c *gin.Context) {
 	id, err := getUserId(c)
 
 	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusUnauthorized, err.Error())
 		return
 	}
 
@@ -68,4 +69,69 @@ func (h *Handler) GetUsr(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, usr)
+}
+
+// @Summary Verification
+// @Security ApiKeyAuth
+// @Tags user
+// @Description send verification code
+// @ID verification
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Failure default {object} ErrorResponse
+// @Router /user/verification [post]
+func (h *Handler) Verification(c *gin.Context) {
+	id, err := getUserId(c)
+	if err != nil {
+		NewErrorResponse(c, http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	var usr models.User
+
+	if usr, err = h.services.Usr.GetUsr(id); err != nil {
+		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	code, err := sender.SendVerification(usr.Email)
+	if err != nil {
+		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"id":    id,
+		"code":  code,
+		"email": usr.Email,
+	})
+}
+
+// @Summary Apply verification
+// @Security ApiKeyAuth
+// @Tags user
+// @Description apply verification code
+// @ID apply-verification
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Failure default {object} ErrorResponse
+// @Router /user/verification_accept [get]
+func (h *Handler) ApplyVerification(c *gin.Context) {
+	id, err := getUserId(c)
+	if err != nil {
+		NewErrorResponse(c, http.StatusUnauthorized, err.Error())
+		return
+	}
+	err = h.services.Usr.Verification(id)
+	if err != nil {
+		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"status": "verified",
+	})
 }

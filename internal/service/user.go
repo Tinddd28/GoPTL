@@ -23,3 +23,7 @@ func (s *UserService) UpdateUsr(id int, input models.User) error {
 	}
 	return s.repo.UpdateUsr(id, input)
 }
+
+func (s *UserService) Verification(id int) error {
+	return s.repo.Verification(id)
+}

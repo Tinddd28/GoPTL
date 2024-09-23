@@ -41,3 +41,16 @@ func (r *UserPostgres) UpdateUsr(id int, input models.User) error {
 	}
 	return nil
 }
+
+func (r *UserPostgres) Verification(id int) error {
+	var email string
+	query := fmt.Sprintf("UPDATE %s SET isverified=$1 WHERE id=$2 returning email", usersTable)
+	err := r.db.QueryRow(context.Background(), query, true, id).Scan(&email)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return errors.New("user not found")
+		}
+	}
+
+	return nil
+}

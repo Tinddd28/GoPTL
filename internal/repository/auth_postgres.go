@@ -20,7 +20,7 @@ func NewAuthPostgres(db *pgxpool.Pool) *AuthPostgres {
 func (r *AuthPostgres) CreateUser(user models.User) (int, error) {
 	var id int
 	query := fmt.Sprintf("INSERT INTO %s (name, lastname, email, country, hashpass, isactive, isverified) values ($1, $2, $3, $4, $5, $6, $7) RETURNING id", usersTable)
-	row := r.db.QueryRow(context.Background(), query, user.Name, user.Lastname, user.Email, user.Country, user.Password, true, true)
+	row := r.db.QueryRow(context.Background(), query, user.Name, user.Lastname, user.Email, user.Country, user.Password, true, false)
 	if err := row.Scan(&id); err != nil {
 		return 0, err
 	}

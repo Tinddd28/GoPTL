@@ -2,7 +2,6 @@ package sender
 
 import (
 	"fmt"
-	"github.com/Tinddd28/GoPTL/pkg/random"
 	"log"
 	"net/smtp"
 	"os"
@@ -74,7 +73,7 @@ func SendMesResPass(password, email string) error {
 	return nil
 }
 
-func SendVerification(email string) (int64, error) {
+func SendVerification(email string) error {
 	err := godotenv.Load()
 	if err != nil {
 		fmt.Println("Error loading .env file")
@@ -88,17 +87,16 @@ func SendVerification(email string) (int64, error) {
 	smtpPort := os.Getenv("SMTP_PORT")
 	to := []string{email}
 
-	code := random.RandomInt(10000, 99999)
-	message := fmt.Sprintf("Subject: PrimeTokenList Verifcation\n\nYour verification code is: %d\nUse him for auth on our site with your email",
-		code)
+	//code := random.RandomInt(10000, 99999)
+	message := fmt.Sprintf("Subject: PrimeTokenList Verifcation\n\nClick on the link to verify your email: http://31.128.42.224:8080/user/verification_accept")
 
 	auth := smtp.PlainAuth("", from, pass, smtpHost)
 
 	err = smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, []byte(message))
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	log.Println("Email sent successfully!")
-	return code, nil
+	return nil
 }

@@ -96,7 +96,7 @@ func (h *Handler) Verification(c *gin.Context) {
 		return
 	}
 
-	code, err := sender.SendVerification(usr.Email)
+	err = sender.SendVerification(usr.Email)
 	if err != nil {
 		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -104,7 +104,6 @@ func (h *Handler) Verification(c *gin.Context) {
 
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"id":    id,
-		"code":  code,
 		"email": usr.Email,
 	})
 }

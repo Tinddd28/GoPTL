@@ -41,12 +41,12 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	user := router.Group("/user", h.userIdentity)
 	{
 		user.GET("/", h.GetUsr)
-		user.PUT("/", h.UpdateUser) // FIXME: Добавить изменение поля updated_at в таблице
+		user.PUT("/", h.UpdateUser)
 		user.POST("/verification", h.Verification)
 		user.GET("/verification_accept", h.ApplyVerification)
 	}
 
-	password := router.Group("/password") // FIXME: Добавить изменение поля updated_at в таблице
+	password := router.Group("/password")
 	{
 		password.PATCH("/change", h.userIdentity, h.ChangePassword)
 		password.POST("/reset", h.ResetPassword)

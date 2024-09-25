@@ -73,7 +73,7 @@ func SendMesResPass(password, email string) error {
 	return nil
 }
 
-func SendVerification(email string) error {
+func SendVerification(id int, email string) error {
 	err := godotenv.Load()
 	if err != nil {
 		fmt.Println("Error loading .env file")
@@ -88,7 +88,7 @@ func SendVerification(email string) error {
 	to := []string{email}
 
 	//code := random.RandomInt(10000, 99999)
-	message := fmt.Sprintf("Subject: PrimeTokenList Verifcation\n\nClick on the link to verify your email: http://0.0.0.0:8080/user/verification_accept")
+	message := fmt.Sprintf("Subject: PrimeTokenList Verifcation\n\nClick on the link to verify your email: http://0.0.0.0:8000/user/verification_accept?id=%d", id)
 
 	auth := smtp.PlainAuth("", from, pass, smtpHost)
 

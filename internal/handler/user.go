@@ -5,6 +5,7 @@ import (
 	"github.com/Tinddd28/GoPTL/pkg/sender"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 // @Summary Update user
@@ -96,7 +97,7 @@ func (h *Handler) Verification(c *gin.Context) {
 		return
 	}
 
-	err = sender.SendVerification(usr.Email)
+	err = sender.SendVerification(id, usr.Email)
 	if err != nil {
 		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -109,20 +110,21 @@ func (h *Handler) Verification(c *gin.Context) {
 }
 
 // @Summary Apply verification
-// @Security ApiKeyAuth
 // @Tags user
 // @Description apply verification code
 // @ID apply-verification
 // @Produce json
+// @Param id path int true "User id"
 // @Success 200 {object} map[string]interface{}
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Failure default {object} ErrorResponse
 // @Router /user/verification_accept [get]
 func (h *Handler) ApplyVerification(c *gin.Context) {
-	id, err := getUserId(c)
+
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		NewErrorResponse(c, http.StatusUnauthorized, err.Error())
+		NewErrorResponse(c, http.StatusBadRequest, "invalid id param")
 		return
 	}
 	err = h.services.Usr.Verification(id)

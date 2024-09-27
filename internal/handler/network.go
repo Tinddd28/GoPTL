@@ -25,23 +25,23 @@ import (
 func (h *Handler) CreateNetwork(c *gin.Context) {
 	supus, err := getSuperUser(c)
 	if err != nil {
-		NewErrorResponse(c, http.StatusUnauthorized, err.Error())
+		NewErrorResponse(c, http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 	if !supus {
-		NewErrorResponse(c, http.StatusUnauthorized, "you are not a superuser")
+		NewErrorResponse(c, http.StatusUnauthorized, "You are not superuser")
 		return
 	}
 
 	var input models.Network
 	if err := c.BindJSON(&input); err != nil {
-		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		NewErrorResponse(c, http.StatusBadRequest, "Invalid input")
 		return
 	}
 
 	id, err := h.services.Network.CreateNetwork(input)
 	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusInternalServerError, "Failed to create network")
 		return
 	}
 
@@ -62,7 +62,7 @@ func (h *Handler) CreateNetwork(c *gin.Context) {
 func (h *Handler) GetNetworks(c *gin.Context) {
 	networks, err := h.services.Network.GetNetworks()
 	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusInternalServerError, "Failed to get networks")
 		return
 	}
 
@@ -85,23 +85,23 @@ func (h *Handler) GetNetworks(c *gin.Context) {
 func (h *Handler) DeleteNetwork(c *gin.Context) {
 	supus, err := getSuperUser(c)
 	if err != nil {
-		NewErrorResponse(c, http.StatusUnauthorized, err.Error())
+		NewErrorResponse(c, http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 	if !supus {
-		NewErrorResponse(c, http.StatusUnauthorized, "you are not superuser")
+		NewErrorResponse(c, http.StatusUnauthorized, "You are not superuser")
 		return
 	}
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		NewErrorResponse(c, http.StatusBadRequest, "invalid id param")
+		NewErrorResponse(c, http.StatusBadRequest, "Invalid id")
 		return
 	}
 
 	err = h.services.Network.DeleteNetwork(id)
 	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusInternalServerError, "Failed to delete network")
 		return
 	}
 

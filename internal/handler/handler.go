@@ -38,12 +38,12 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		auth.POST("/login", h.Login)
 	}
 
-	user := router.Group("/user", h.userIdentity)
+	user := router.Group("/user")
 	{
-		user.GET("/", h.GetUsr)
-		user.PUT("/", h.UpdateUser)
-		user.POST("/verification", h.Verification)
-		user.GET("/verification_accept", h.ApplyVerification)
+		user.GET("/info", h.userIdentity, h.GetUsr)
+		user.PUT("/", h.userIdentity, h.UpdateUser)
+		user.POST("/verification", h.userIdentity, h.Verification)
+		user.GET("/verification_accept/:id", h.ApplyVerification)
 	}
 
 	password := router.Group("/password")

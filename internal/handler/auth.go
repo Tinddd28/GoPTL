@@ -1,13 +1,14 @@
 package handler
 
 import (
+	"log/slog"
+	"net/http"
+
 	"github.com/Tinddd28/GoPTL/internal/models"
 	"github.com/Tinddd28/GoPTL/pkg/logger"
 	"github.com/Tinddd28/GoPTL/pkg/random"
 	"github.com/Tinddd28/GoPTL/pkg/sender"
 	"github.com/gin-gonic/gin"
-	"log/slog"
-	"net/http"
 )
 
 // @Summary Register
@@ -25,13 +26,13 @@ import (
 func (h *Handler) Register(c *gin.Context) {
 	var input models.User
 	if err := c.BindJSON(&input); err != nil {
-		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		NewErrorResponse(c, http.StatusBadRequest, "Invalid input")
 	}
 
 	input.Password = random.RandomPass(10)
 	id, err := h.services.Authorization.CreateUser(input)
 	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusInternalServerError, "Failed to create user")
 		return
 	}
 
@@ -44,7 +45,7 @@ func (h *Handler) Register(c *gin.Context) {
 		LastName: input.Lastname,
 	})
 	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusInternalServerError, "Failed to send email")
 		return
 	}
 
@@ -73,7 +74,7 @@ type Login struct {
 func (h *Handler) Login(c *gin.Context) {
 	var input Login
 	if err := c.BindJSON(&input); err != nil {
-		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		NewErrorResponse(c, http.StatusBadRequest, "Invalid input")
 	}
 	//log_ := logger.SetupPrettyLogger()
 	//log_.Info("mail and pass: ", slog.Any("data", input))
@@ -81,7 +82,7 @@ func (h *Handler) Login(c *gin.Context) {
 	token, err := h.services.Authorization.GenerateToken(input.Email, input.Password)
 	//log_.Info(token)
 	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusInternalServerError, "Failed to generate token")
 		return
 	}
 

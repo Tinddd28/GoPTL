@@ -11,7 +11,7 @@ type Authorization interface {
 }
 
 type Usr interface {
-	GetUsr(id int) (models.User, error)
+	GetUsr(id int) (models.UserResponse, error)
 	UpdateUsr(id int, input models.User) error
 	Verification(id int) error
 }

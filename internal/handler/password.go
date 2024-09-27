@@ -1,11 +1,12 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/Tinddd28/GoPTL/internal/models"
 	"github.com/Tinddd28/GoPTL/pkg/random"
 	"github.com/Tinddd28/GoPTL/pkg/sender"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 // @Summary Change password
@@ -24,18 +25,18 @@ import (
 func (h *Handler) ChangePassword(c *gin.Context) {
 	id, err := getUserId(c)
 	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusInternalServerError, "Unauthorized")
 		return
 	}
 
 	var input models.Password
 	if err = c.BindJSON(&input); err != nil {
-		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		NewErrorResponse(c, http.StatusBadRequest, "Invalid input")
 		return
 	}
 
 	if err = h.services.Password.ChangePassword(id, input.OldPassword, input.NewPassword); err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusInternalServerError, "Failed to change password")
 		return
 	}
 
@@ -57,17 +58,17 @@ func (h *Handler) ChangePassword(c *gin.Context) {
 func (h *Handler) ResetPassword(c *gin.Context) {
 	var email models.PassReset
 	if err := c.BindJSON(&email); err != nil {
-		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		NewErrorResponse(c, http.StatusBadRequest, "Invalid input")
 		return
 	}
 
 	pass := random.RandomPass(10)
 	if err := h.services.Password.ResetPassword(pass, email.Email); err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusInternalServerError, "Failed to reset password")
 	}
 
 	if err := sender.SendMesResPass(pass, email.Email); err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusInternalServerError, "Failed to send email")
 		return
 	}
 

@@ -191,7 +191,7 @@ func (h *Handler) UpdateProject(c *gin.Context) {
 func (h *Handler) DeleteProject(c *gin.Context) {
 	supusr, err := getSuperUser(c)
 	if err != nil {
-		NewErrorResponse(c, http.StatusUnauthorized, err.Error())
+		NewErrorResponse(c, http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 	if !supusr {
@@ -206,7 +206,7 @@ func (h *Handler) DeleteProject(c *gin.Context) {
 	}
 
 	if err := h.services.Project.DeleteProject(id); err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusInternalServerError, "Failed to delete project")
 		return
 	}
 
@@ -229,7 +229,7 @@ func (h *Handler) DeleteProject(c *gin.Context) {
 func (h *Handler) SetUnlockToken(c *gin.Context) {
 	supusr, err := getSuperUser(c)
 	if err != nil {
-		NewErrorResponse(c, http.StatusUnauthorized, err.Error())
+		NewErrorResponse(c, http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 
@@ -241,11 +241,11 @@ func (h *Handler) SetUnlockToken(c *gin.Context) {
 	var token = models.SetUnlockToken{}
 
 	if err := c.BindJSON(&token); err != nil {
-		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		NewErrorResponse(c, http.StatusBadRequest, "Invalid input")
 	}
 
 	if err := h.services.Project.SetUnlockToken(token.Id, token.UnlockedToken); err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusInternalServerError, "Failed to set unlock token")
 		return
 	}
 

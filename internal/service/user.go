@@ -13,7 +13,7 @@ func NewUserService(repo repository.Usr) *UserService {
 	return &UserService{repo: repo}
 }
 
-func (s *UserService) GetUsr(id int) (models.User, error) {
+func (s *UserService) GetUsr(id int) (models.UserResponse, error) {
 	return s.repo.GetUsr(id)
 }
 

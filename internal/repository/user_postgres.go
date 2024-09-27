@@ -17,16 +17,16 @@ func NewUserPostgres(db *pgxpool.Pool) *UserPostgres {
 	return &UserPostgres{db: db}
 }
 
-func (r *UserPostgres) GetUsr(id int) (models.User, error) {
-	var us models.User
+func (r *UserPostgres) GetUsr(id int) (models.UserResponse, error) {
+	var us models.UserResponse
 
-	query := fmt.Sprintf("SELECT id, name, lastname, email, country, created_at::text FROM %s WHERE id=$1", usersTable)
-	err := r.db.QueryRow(context.Background(), query, id).Scan(&us.Id, &us.Name, &us.Lastname, &us.Email, &us.Country, &us.CreatedAt)
+	query := fmt.Sprintf("SELECT id, name, lastname, email, country, isverified FROM %s WHERE id=$1", usersTable)
+	err := r.db.QueryRow(context.Background(), query, id).Scan(&us.Id, &us.Name, &us.Lastname, &us.Email, &us.Country, &us.Isverified)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return models.User{}, errors.New("user not found")
+			return models.UserResponse{}, errors.New("user not found")
 		}
-		return models.User{}, err
+		return models.UserResponse{}, err
 	}
 	return us, nil
 }

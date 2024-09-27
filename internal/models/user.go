@@ -16,6 +16,15 @@ type User struct {
 	UpdatedAt   string `json:"-" db:"updated_at"`
 }
 
+type UserResponse struct {
+	Id         int    `json:"-"`
+	Name       string `json:"name"`
+	Lastname   string `json:"lastname"`
+	Email      string `json:"email"`
+	Country    string `json:"country"`
+	Isverified bool   `json:"isverified"`
+}
+
 func (us User) UserValidate() error {
 	if us.Name == "" && us.Lastname == "" && us.Email == "" && us.Country == "" {
 		return errors.New("updated structure is empty")

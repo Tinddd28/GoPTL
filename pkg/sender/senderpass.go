@@ -88,7 +88,7 @@ func SendVerification(id int, email string) error {
 	to := []string{email}
 
 	//code := random.RandomInt(10000, 99999)
-	message := fmt.Sprintf("Subject: PrimeTokenList Verifcation\n\nClick on the link to verify your email: http://0.0.0.0:8000/user/verification_accept?id=%d", id)
+	message := fmt.Sprintf("Subject: PrimeTokenList Verifcation\n\nClick on the link to verify your email: http://0.0.0.0:8000/user/verification_accept/%d", id)
 
 	auth := smtp.PlainAuth("", from, pass, smtpHost)
 

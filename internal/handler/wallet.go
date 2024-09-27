@@ -23,14 +23,14 @@ import (
 func (h *Handler) CreateWalletForUser(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
-		NewErrorResponse(c, http.StatusUnauthorized, err.Error())
+		NewErrorResponse(c, http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 
 	var walletForUser models.WalletForUser
 
 	if err := c.BindJSON(&walletForUser); err != nil {
-		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		NewErrorResponse(c, http.StatusBadRequest, "Invalid input")
 		return
 	}
 
@@ -76,7 +76,7 @@ func (h *Handler) CreateWalletForUser(c *gin.Context) {
 func (h *Handler) CreateWalletForProject(c *gin.Context) {
 	superUser, err := getSuperUser(c)
 	if err != nil {
-		NewErrorResponse(c, http.StatusUnauthorized, err.Error())
+		NewErrorResponse(c, http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 
@@ -88,7 +88,7 @@ func (h *Handler) CreateWalletForProject(c *gin.Context) {
 	var walletForProject models.WalletForProject
 
 	if err := c.BindJSON(&walletForProject); err != nil {
-		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		NewErrorResponse(c, http.StatusBadRequest, "Invalid input")
 		return
 	}
 
@@ -134,7 +134,7 @@ func (h *Handler) CreateWalletForProject(c *gin.Context) {
 func (h *Handler) GetWallets(c *gin.Context) {
 	wallets, err := h.services.Wallet.GetWallets()
 	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusInternalServerError, "Failed to get wallets")
 		return
 	}
 
@@ -154,12 +154,12 @@ func (h *Handler) GetWallets(c *gin.Context) {
 func (h *Handler) GetBalance(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
-		NewErrorResponse(c, http.StatusUnauthorized, err.Error())
+		NewErrorResponse(c, http.StatusUnauthorized, "Unauthorized")
 	}
 
 	balance, err := h.services.Wallet.GetBalance(userId)
 	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusInternalServerError, "Failed to get balance")
 		return
 	}
 

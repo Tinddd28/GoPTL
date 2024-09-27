@@ -1,11 +1,12 @@
 package handler
 
 import (
+	"net/http"
+	"strconv"
+
 	"github.com/Tinddd28/GoPTL/internal/models"
 	"github.com/Tinddd28/GoPTL/pkg/sender"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"strconv"
 )
 
 // @Summary Update user
@@ -25,17 +26,17 @@ func (h *Handler) UpdateUser(c *gin.Context) {
 	var input models.User
 	id, err := getUserId(c)
 	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusInternalServerError, "Unauthorized")
 		return
 	}
 	if err := c.BindJSON(&input); err != nil {
-		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		NewErrorResponse(c, http.StatusBadRequest, "Invalid input")
 		return
 	}
 
 	err = h.services.Usr.UpdateUsr(id, input)
 	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusInternalServerError, "Failed to update user")
 		return
 	}
 
@@ -50,22 +51,22 @@ func (h *Handler) UpdateUser(c *gin.Context) {
 // @Description get user info
 // @ID get-user
 // @Produce json
-// @Success 200 {object} models.User
+// @Success 200 {object} models.UserResponse
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Failure default {object} ErrorResponse
-// @Router /user [get]
+// @Router /user/info [get]
 func (h *Handler) GetUsr(c *gin.Context) {
-	var usr models.User
+	var usr models.UserResponse
 	id, err := getUserId(c)
 
 	if err != nil {
-		NewErrorResponse(c, http.StatusUnauthorized, err.Error())
+		NewErrorResponse(c, http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 
 	if usr, err = h.services.Usr.GetUsr(id); err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusInternalServerError, "Failed to get user")
 		return
 	}
 
@@ -86,20 +87,20 @@ func (h *Handler) GetUsr(c *gin.Context) {
 func (h *Handler) Verification(c *gin.Context) {
 	id, err := getUserId(c)
 	if err != nil {
-		NewErrorResponse(c, http.StatusUnauthorized, err.Error())
+		NewErrorResponse(c, http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 
-	var usr models.User
+	var usr models.UserResponse
 
 	if usr, err = h.services.Usr.GetUsr(id); err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusInternalServerError, "Failed to get user")
 		return
 	}
 
 	err = sender.SendVerification(id, usr.Email)
 	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusInternalServerError, "Failed to send verification code")
 		return
 	}
 
@@ -119,7 +120,7 @@ func (h *Handler) Verification(c *gin.Context) {
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Failure default {object} ErrorResponse
-// @Router /user/verification_accept [get]
+// @Router /user/verification_accept/{id} [get]
 func (h *Handler) ApplyVerification(c *gin.Context) {
 
 	id, err := strconv.Atoi(c.Param("id"))
@@ -129,7 +130,7 @@ func (h *Handler) ApplyVerification(c *gin.Context) {
 	}
 	err = h.services.Usr.Verification(id)
 	if err != nil {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusInternalServerError, "Failed to verify user")
 		return
 	}
 	c.JSON(http.StatusOK, map[string]interface{}{

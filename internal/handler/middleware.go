@@ -2,9 +2,10 @@ package handler
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 const (
@@ -28,7 +29,7 @@ func (h *Handler) userIdentity(c *gin.Context) {
 
 	userId, issuperuser, err := h.services.Authorization.ParseToken(headerParts[1])
 	if err != nil {
-		NewErrorResponse(c, http.StatusUnauthorized, err.Error())
+		NewErrorResponse(c, http.StatusUnauthorized, "invalid token")
 	}
 
 	c.Set(userIdCtx, userId)
